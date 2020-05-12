@@ -85120,6 +85120,11 @@ function () {
     };
   }
 
+  User.prototype.markerContent = function () {
+    return "\n      <div>\n        <h3>Customer: " + this.name + "</h3>\n        Latitude: " + this.location.lat + "\n        Longitude: " + this.location.lng + "\n      </div>\n    ";
+  };
+
+  ;
   return User;
 }();
 
@@ -85152,11 +85157,62 @@ function () {
   }
 
   ;
+
+  Company.prototype.markerContent = function () {
+    return "\n      <div>\n        <h3>Company: " + this.companyName + "</h3>\n        Catchphrase: " + this.catchPhrase + "\n        <br/>\n        <br/>\n        Latitude: " + this.location.lat + "\n        Longitude: " + this.location.lng + "\n      </div>\n    ";
+  };
+
   return Company;
 }();
 
 exports.Company = Company;
-},{"faker":"node_modules/faker/index.js"}],"src/index.ts":[function(require,module,exports) {
+},{"faker":"node_modules/faker/index.js"}],"src/CustomMap.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+;
+
+var CustomMap =
+/** @class */
+function () {
+  function CustomMap(divId) {
+    this.googleMap = new google.maps.Map(document.getElementById(divId), {
+      zoom: 1,
+      center: {
+        lat: 0,
+        lng: 0
+      }
+    });
+  }
+
+  ;
+
+  CustomMap.prototype.addMarker = function (obj) {
+    var _this = this;
+
+    var marker = new google.maps.Marker({
+      map: this.googleMap,
+      position: {
+        lat: obj.location.lat,
+        lng: obj.location.lng
+      }
+    });
+    marker.addListener('click', function () {
+      var infoWindow = new google.maps.InfoWindow({
+        content: obj.markerContent()
+      });
+      infoWindow.open(_this.googleMap, marker);
+    });
+  };
+
+  ;
+  return CustomMap;
+}();
+
+exports.CustomMap = CustomMap;
+},{}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -85167,19 +85223,14 @@ var User_1 = require("./User");
 
 var Company_1 = require("./Company");
 
+var CustomMap_1 = require("./CustomMap");
+
+var map = new CustomMap_1.CustomMap('map');
 var user = new User_1.User();
-console.log(user);
 var company = new Company_1.Company();
-console.log(company);
-var map = document.getElementById("map");
-new google.maps.Map(map, {
-  zoom: 3,
-  center: {
-    lat: 0,
-    lng: 0
-  }
-});
-},{"./User":"src/User.ts","./Company":"src/Company.ts"}],"../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+map.addMarker(user);
+map.addMarker(company);
+},{"./User":"src/User.ts","./Company":"src/Company.ts","./CustomMap":"src/CustomMap.ts"}],"../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -85207,7 +85258,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33603" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33919" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
